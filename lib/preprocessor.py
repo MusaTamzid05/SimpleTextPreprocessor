@@ -21,6 +21,7 @@ class SimpleTextProcessor(TextPreprocessor):
         super().__init__()
     
     def process(self, text):
+        text = text.strip()
         return [word.lower() for word in word_tokenize(text)]
 
 
@@ -66,6 +67,7 @@ class TFIDFPreprocessor:
     def __init__(self, simple_text_processor=False):
         self.total_docs = 0
         self.g_word_count = {}
+        self.max_doc_length = 0
 
         if simple_text_processor:
             self.text_preprocessor = SimpleTextProcessor()
@@ -84,17 +86,20 @@ class TFIDFPreprocessor:
         results = []
 
         for text in corpus:
-            words = self.text_preprocessor.process(text=text)
-            word_count = self._get_word_count_from(text=text)
+            word_count, _ = self._get_word_count_from(text=text)
             current_result = []
 
-            for word in words:
-                tf = math.log10(word_count[word] + 1)
+            for word, current_count in word_count.items():
+                tf = math.log10(current_count  + 1)
                 idf = math.log10(self.total_docs / self.g_word_count[word])
-                result = tf * idf
-                current_result.append(result)
+                current_result.append(tf * idf)
+
+            while len(current_result) < self.max_doc_length:
+                current_result.append(0)
 
             results.append(current_result)
+
+
 
         return np.array(results)
 
@@ -107,7 +112,10 @@ class TFIDFPreprocessor:
         self.total_docs = len(corpus)
 
         for doc in corpus:
-            word_count = self._get_word_count_from(text=doc)
+            word_count, total_words = self._get_word_count_from(text=doc)
+
+            if total_words  > self.max_doc_length:
+                self.max_doc_length = total_words
 
             for word, _ in word_count.items():
 
@@ -116,8 +124,6 @@ class TFIDFPreprocessor:
                 self.g_word_count[word] += 1
 
 
-        for word, count in self.g_word_count.items():
-            print(f"{word} => {count}")
 
     def _get_word_count_from(self, text):
         word_count = {}
@@ -129,7 +135,7 @@ class TFIDFPreprocessor:
 
             word_count[word] += 1
 
-        return word_count
+        return word_count, len(words)
 
     def save(self, path):
         if path.endswith(".pickle") == False:
@@ -142,11 +148,11 @@ class TFIDFPreprocessor:
         with open(path, "wb") as f:
             data = {
                     "g_word_count" : self.g_word_count,
-                    "total_docs" : self.total_docs
+                    "total_docs" : self.total_docs,
+                    "max_doc_length" : self.max_doc_length,
                     }
 
             pickle.dump(data, f)
-
             print(f"Data saved in {path}")
 
     def load(self, path):
@@ -154,25 +160,7 @@ class TFIDFPreprocessor:
             data = pickle.load(f)
             self.g_word_count = data["g_word_count"]
             self.total_docs = data["total_docs"]
+            self.max_doc_length = data["max_doc_length"]
             print(f"load successfull {path}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
