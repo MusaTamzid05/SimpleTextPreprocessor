@@ -3,6 +3,8 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 import re
+import pickle
+import os
 
 class TextPreprocessor:
     def __init__(self):
@@ -99,6 +101,34 @@ class TFIDFPreprocessor:
             word_count[word] += 1
 
         return word_count
+
+    def save(self, path):
+        if path.endswith(".pickle") == False:
+            path += ".pickle"
+
+        if os.path.exists(path):
+            print(f"removing old {path}")
+            os.remove(path)
+
+        with open(path, "wb") as f:
+            data = {
+                    "g_word_count" : self.g_word_count,
+                    "total_docs" : self.total_docs
+                    }
+
+            pickle.dump(data, f)
+
+            print(f"Data saved in {path}")
+
+    def load(self, path):
+        with open(path, "rb") as f:
+            data = pickle.load(f)
+            self.g_word_count = data["g_word_count"]
+            self.total_docs = data["total_docs"]
+
+        print(self.g_word_count)
+        print(self.total_docs)
+
 
 
 

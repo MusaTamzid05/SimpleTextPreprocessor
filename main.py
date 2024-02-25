@@ -13,11 +13,13 @@ def main():
               'The dog is lazy but the brown fox is quick!'
     ]
 
-     corpus = gutenberg.raw(fileids="carroll-alice.txt")
-     corpus = sent_tokenize(corpus)
+     #corpus = gutenberg.raw(fileids="carroll-alice.txt")
+     #corpus = sent_tokenize(corpus)
 
      corpus_preprocessor = TFIDFPreprocessor(simple_text_processor=True)
-     corpus_preprocessor.init_data_from_corpus(corpus=corpus)
+     #corpus_preprocessor.init_data_from_corpus(corpus=corpus)
+     #corpus_preprocessor.save(path="data")
+     corpus_preprocessor.load(path="data.pickle")
 
 
 
