@@ -20,6 +20,11 @@ def main():
      #corpus_preprocessor.init_data_from_corpus(corpus=corpus)
      #corpus_preprocessor.save(path="data")
      corpus_preprocessor.load(path="data.pickle")
+     results = corpus_preprocessor.process(corpus=corpus)
+
+     print(results)
+
+
 
 
 

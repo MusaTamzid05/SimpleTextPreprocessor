@@ -5,6 +5,8 @@ from nltk.stem import WordNetLemmatizer
 import re
 import pickle
 import os
+import math
+import numpy as np
 
 class TextPreprocessor:
     def __init__(self):
@@ -71,6 +73,33 @@ class TFIDFPreprocessor:
             self.text_preprocessor = TextPreprocessorV1()
 
 
+    def process(self, corpus):
+        # make sure this is same corpus you use for loading
+
+        if self.total_docs == 0:
+            print("Please init or load the corpus first!!")
+            exit(1)
+            
+
+        results = []
+
+        for text in corpus:
+            words = self.text_preprocessor.process(text=text)
+            word_count = self._get_word_count_from(text=text)
+            current_result = []
+
+            for word in words:
+                tf = math.log10(word_count[word] + 1)
+                idf = math.log10(self.total_docs / self.g_word_count[word])
+                result = tf * idf
+                current_result.append(result)
+
+            results.append(current_result)
+
+        return np.array(results)
+
+
+
     def init_data_from_corpus(self, corpus):
         if type(corpus) != list:
             raise ValueError("Corpus needs to be list of text(documents)")
@@ -125,9 +154,8 @@ class TFIDFPreprocessor:
             data = pickle.load(f)
             self.g_word_count = data["g_word_count"]
             self.total_docs = data["total_docs"]
+            print(f"load successfull {path}")
 
-        print(self.g_word_count)
-        print(self.total_docs)
 
 
 
