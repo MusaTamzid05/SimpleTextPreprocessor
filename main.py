@@ -1,4 +1,4 @@
-from lib.preprocessor import TextPreprocessor
+from lib.preprocessor import TFIDFPreprocessor
 from nltk.corpus import gutenberg
 from nltk.tokenize import sent_tokenize
 
@@ -16,13 +16,10 @@ def main():
      corpus = gutenberg.raw(fileids="carroll-alice.txt")
      corpus = sent_tokenize(corpus)
 
+     corpus_preprocessor = TFIDFPreprocessor(simple_text_processor=True)
+     corpus_preprocessor.init_data_from_corpus(corpus=corpus)
 
 
-     text_preprocessor = TextPreprocessor()
-
-     for text in corpus:
-         words = text_preprocessor.process(text=text)
-         print(words)
 
 
 
