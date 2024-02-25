@@ -1,4 +1,6 @@
-
+from lib.preprocessor import TextPreprocessor
+from nltk.corpus import gutenberg
+from nltk.tokenize import sent_tokenize
 
 def main():
      corpus = ['The sky is blue and beautiful.',
@@ -11,7 +13,18 @@ def main():
               'The dog is lazy but the brown fox is quick!'
     ]
 
-     print(corpus)
+     corpus = gutenberg.raw(fileids="carroll-alice.txt")
+     corpus = sent_tokenize(corpus)
+
+
+
+     text_preprocessor = TextPreprocessor()
+
+     for text in corpus:
+         words = text_preprocessor.process(text=text)
+         print(words)
+
+
 
 
 if __name__ == "__main__":
