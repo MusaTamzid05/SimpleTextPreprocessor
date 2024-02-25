@@ -73,6 +73,8 @@ class TFIDFPreprocessor:
         if type(corpus) != list:
             raise ValueError("Corpus needs to be list of text(documents)")
 
+        self.total_docs = len(corpus)
+
         for doc in corpus:
             word_count = self._get_word_count_from(text=doc)
 
